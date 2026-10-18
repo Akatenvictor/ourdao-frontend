@@ -72,7 +72,7 @@ function member(overrides: Record<string, unknown> = {}) {
   return {
     address: 'GALICE',
     status: 'ActiveMember',
-    join_ledger: 0,
+    join_time: 0,
     contribution: BigInt(0),
     share_balance: BigInt(5_000_0000000),
     has_active_loan: false,
@@ -117,6 +117,24 @@ describe('DashboardPage', () => {
     expect(screen.getByText('Quick Actions')).toBeInTheDocument()
   })
 
+  it('shows exactly one claimable yield amount and one claim action (#345)', async () => {
+    mockGetPendingYield.mockResolvedValue(BigInt(10_0000000))
+    renderWithProviders(<DashboardPage />)
+
+    await waitFor(() => expect(screen.getByText('Claimable Yield', { selector: 'p' })).toBeInTheDocument())
+    expect(screen.queryByText('Pending Rewards')).not.toBeInTheDocument()
+    expect(screen.queryByText('Governance Rewards')).not.toBeInTheDocument()
+    expect(screen.queryByText('Restaking Yield')).not.toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: 'Claim' })).toHaveLength(1)
+  })
+
+  it('hides the claim panel when there is no yield to claim (#345)', async () => {
+    renderWithProviders(<DashboardPage />)
+
+    await waitFor(() => expect(screen.getByText('Quick Actions')).toBeInTheDocument())
+    expect(screen.queryByRole('button', { name: 'Claim' })).not.toBeInTheDocument()
+  })
+
   it('does not show the Admin Panel quick action for a non-admin-status member', async () => {
     mockGetMember.mockResolvedValue(member({ status: 'ActiveMember' }))
     renderWithProviders(<DashboardPage />)
@@ -148,14 +166,13 @@ describe('DashboardPage', () => {
     renderWithProviders(<DashboardPage />)
 
     await waitFor(() => expect(screen.getByText('Quick Actions')).toBeInTheDocument())
-    expect(screen.queryByText('Available Rewards')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Claim' })).not.toBeInTheDocument()
   })
 
   it('populated state: shows the rewards section and lets the member claim', async () => {
     mockGetPendingYield.mockResolvedValue(BigInt(1_000_0000))
     renderWithProviders(<DashboardPage />)
 
-    await waitFor(() => expect(screen.getByText('Available Rewards')).toBeInTheDocument())
-    expect(screen.getAllByRole('button', { name: /Claim/ }).length).toBeGreaterThan(0)
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Claim' })).toBeInTheDocument())
   })
 })

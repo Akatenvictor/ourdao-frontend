@@ -37,7 +37,6 @@ vi.mock('@/hooks/useDAO', () => ({
   useUserData: () => mockUserData(),
   useRewards: () => ({
     claimRewards: vi.fn(),
-    claimYield: vi.fn(),
     isPending: false,
     isSuccess: false,
   }),
@@ -60,7 +59,6 @@ const baseUserData: UserData = {
   isMember: false,
   isAdmin: false,
   votingWeight: 1,
-  pendingRewards: BigInt(0),
   pendingYield: BigInt(0),
   hasActiveLoan: false,
   loans: [],
