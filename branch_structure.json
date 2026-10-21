@@ -1,0 +1,21 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "fix/dead-property-reads",
+    "fix/ipfs-encryption-envelope",
+    "main",
+    "origin"
+  ],
+  "parent": {
+    "fix/dead-property-reads": "main",
+    "fix/ipfs-encryption-envelope": "main",
+    "main": null,
+    "origin": "main"
+  },
+  "order": [
+    "main",
+    "fix/dead-property-reads",
+    "fix/ipfs-encryption-envelope",
+    "origin"
+  ]
+}
